@@ -151,7 +151,8 @@ public class BlackJack {
                     g.drawString(message, 220, 250);
 
                     //<-----thinking about slipping something in right here the game to automatically make the restartButton enabled. idk if itll work tho...
-
+                    restartButton.setEnabled(true);
+                
                 }
 
 
@@ -197,7 +198,8 @@ public class BlackJack {
         stayButton.setFocusable(false);
         buttonPanel.add(stayButton);
         //my new buttons
-        restartButton.setFocusable(false);  //gonna toy with this. might make a menu and layer this sort of shit in so you dont misclick and restart a good game
+        //restartButton.setFocusable(false);  //gonna toy with this. might make a menu and layer this sort of shit in so you dont misclick and restart a good game
+        restartButton.setEnabled(false);
         buttonPanel.add(restartButton);
 
 
@@ -259,6 +261,11 @@ public class BlackJack {
     }
 
     public void startGame(){
+        //start game now returns the enabled status of the restartButton to its default 
+        restartButton.setEnabled(false);
+
+
+
         //deck methods
         buildDeck();
         shuffleDeck();
