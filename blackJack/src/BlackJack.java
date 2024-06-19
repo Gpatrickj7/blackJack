@@ -150,7 +150,7 @@ public class BlackJack {
                     g.setColor(Color.white);
                     g.drawString(message, 220, 250);
 
-                    //<-----thinking about slipping in right here the game to automatically make the restartButton enabled. idk if itll work tho...
+                    //<-----thinking about slipping something in right here the game to automatically make the restartButton enabled. idk if itll work tho...
 
                 }
 
@@ -208,6 +208,10 @@ public class BlackJack {
             public void actionPerformed(ActionEvent e){
 
                 startGame();
+
+                stayButton.setEnabled(true);
+                hitButton.setEnabled(true);
+                
                 gamePanel.repaint();                            //this works basically how i want. might keep and use knowledge from this improvement to layer in a menu functionality 
                                                                 //but for now (6/18/24 5:04 pm) im gonna try only letting it (restart button) be enabled after "the game"
                 
