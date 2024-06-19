@@ -40,11 +40,13 @@ public class BlackJack {
         }
 
         public boolean isAce() {
+
             return value == "A";
         }
 
 
         public String getImagePath() {
+            
             return "./cards/" + toString() + ".png";
         }
     }
