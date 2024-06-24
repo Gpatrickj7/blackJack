@@ -311,8 +311,8 @@ public class BlackJack {
 
     }
 
-
-    public void buildDeck() {
+    //builds a deck in a way that acts as a physical deck would
+    public ArrayList<Card> buildDeck() {
 
         deck = new ArrayList<Card>();
 
@@ -331,6 +331,8 @@ public class BlackJack {
         System.out.println("BUILD DECK:  ");
 
         System.out.println(deck);
+
+        return deck; //returns the actual deck
 
 
     }
@@ -369,6 +371,12 @@ public class BlackJack {
         }
         return dealerSum;
     }
+
+
+    //BEGINNING OF IMPLEMENTATION OF ADVANCED FEATURES THAT ARE PLANNED. E.G. (adding a shoe mechanic, counters, trainers) //
+
+
+
 
 
     
