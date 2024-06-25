@@ -53,7 +53,9 @@ public class BlackJack {
 
 
 
-    ArrayList<Card> deck;
+    private ArrayList<Card> deck;
+    private Player player;
+    private Dealer dealer;
     Random random = new Random();
 
     //dealer variables 
@@ -267,7 +269,7 @@ public class BlackJack {
 
 
         //deck methods
-        buildDeck();
+        deck = buildDeck();
         shuffleDeck();
 
         //dealer 
@@ -298,7 +300,8 @@ public class BlackJack {
         playerAceCount = 0;
 
         for (int i = 0; i < 2; i++) {
-            card = deck.remove(deck.size() - 1);
+            //card = deck.remove(deck.size() - 1);
+            card = drawCard();
             playerSum += card.getValue();
             playerAceCount += card.isAce() ? 1 : 0;
             playerHand.add(card);
@@ -335,6 +338,11 @@ public class BlackJack {
         return deck; //returns the actual deck
 
 
+    }
+
+    //getter for deck
+    public ArrayList<Card> getDeck() {
+        return deck;
     }
 
     public void shuffleDeck() {
@@ -376,7 +384,69 @@ public class BlackJack {
     //BEGINNING OF IMPLEMENTATION OF ADVANCED FEATURES THAT ARE PLANNED. E.G. (adding a shoe mechanic, counters, trainers) //
 
 
+    //remove card from actual deck
+    public Card drawCard() {
 
+        //possibly implement dealing with empty deck here
+        if (deck.isEmpty()) {
+            buildDeck();
+            shuffleDeck();
+        }
+        return deck.remove(deck.size() - 1);
+    }
+
+    //defined classes for player/dealer. this will allow for easy scaling within the game and helps me stay organized.
+    public class Player {
+        private ArrayList<Card> hand;
+        private int sum;
+        private int aceCount;
+    
+        public Player() {
+    
+            hand = new ArrayList<>();
+            sum = 0;
+            aceCount = 0;
+    
+        }
+    
+        public void addCard(Card card) {
+            hand.add(card);
+            sum += card.getValue();
+            if (card.isAce()) {
+                aceCount++;
+            }
+        }
+    
+        public ArrayList<Card> getHand() {
+            return hand;
+        }
+    
+        public int getSum() {
+            return sum;
+        }
+    
+        public int getAceCount() {
+            return aceCount;
+        }
+    
+        public void reset() {
+            hand.clear();
+            sum = 0;
+            aceCount = 0;
+        }
+    }
+    
+    public class Dealer extends Player {
+        private Card hiddenCard;
+    
+        public void setHiddenCard(Card card) {
+            this.hiddenCard = card;
+        }
+    
+        public Card getHiddenCard() {
+            return hiddenCard;
+        }
+    }
 
 
     
