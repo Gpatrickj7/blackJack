@@ -56,6 +56,7 @@ public class BlackJack {
     private ArrayList<Card> deck;
     private Player player;
     private Dealer dealer;
+    private int bet;
     Random random = new Random();
 
     //dealer variables 
@@ -400,6 +401,8 @@ public class BlackJack {
         private ArrayList<Card> hand;
         private int sum;
         private int aceCount;
+        
+
     
         public Player() {
     
