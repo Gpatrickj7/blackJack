@@ -1,5 +1,6 @@
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;  // Add this
+import java.awt.event.ActionEvent; 
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.*;
@@ -109,8 +110,43 @@ public class BlackJack {
 
                 }
 
-                //display winner
+
+                //add score to display 
+                g.setFont(new Font("Arial", Font.BOLD, 20));
+                g.setColor(Color.WHITE);
+
+                // Player score with bust check
+                int playerCurrentSum = reducePlayerAce();
+                String playerScoreText = "Player Score: " + playerCurrentSum;
+                if (playerCurrentSum > 21) {
+                    g.setColor(Color.RED);
+                    playerScoreText += " BUST!";
+                }
+                g.drawString(playerScoreText, 20, 300);
+
+                //reset color for dealer score 
+                g.setColor(Color.WHITE);
+            
+                // Dealer score - only show full score when game is over
+                String dealerScoreText;
                 if (!stayButton.isEnabled()) {
+                    int dealerCurrentSum = reduceDealerAce();
+                    dealerScoreText = "Dealer Score: " + dealerCurrentSum;
+                    if (dealerCurrentSum > 21){
+                        g.setColor(Color.RED);
+                        dealerScoreText += " BUST!";
+                    }
+
+                } else {
+                // Only show the visible card's value during play
+                dealerScoreText = "Dealer Shows: " + dealerHand.get(0).getValue();
+                }
+                g.drawString(dealerScoreText, 20, 200);
+
+
+
+                //display winner
+                if (!stayButton.isEnabled() || checkForBust()) {
                     dealerSum = reduceDealerAce();
                     playerSum = reducePlayerAce();
                     System.out.println("Stay: ");
@@ -155,6 +191,7 @@ public class BlackJack {
 
                     //<-----thinking about slipping something in right here the game to automatically make the restartButton enabled. idk if itll work tho...
                     restartButton.setEnabled(true);
+                    nextHandButton.setEnabled(true);
                 
                 }
 
@@ -165,6 +202,8 @@ public class BlackJack {
 
         }
     };
+
+
     //basic buttons from guide
     JPanel buttonPanel = new JPanel();
     JButton hitButton = new JButton("Hit");
@@ -172,6 +211,7 @@ public class BlackJack {
 
     //new buttons from me
     JButton restartButton = new JButton("Restart");
+    JButton nextHandButton = new JButton("Next Hand");
 
 
 
@@ -179,7 +219,7 @@ public class BlackJack {
 
 
     BlackJack() {
-        startGame();
+        startGame(true);
 
         //frame or "board"
         frame.setVisible(true);
@@ -201,9 +241,16 @@ public class BlackJack {
         stayButton.setFocusable(false);
         buttonPanel.add(stayButton);
         //my new buttons
-        //restartButton.setFocusable(false);  //gonna toy with this. might make a menu and layer this sort of shit in so you dont misclick and restart a good game
+        //Next Hand button 
+        nextHandButton.setEnabled(false);
+        buttonPanel.add(nextHandButton);
+        
+        //gonna toy with this. might make a menu and layer this sort of shit in so you dont misclick and restart a good game
         restartButton.setEnabled(false);
         buttonPanel.add(restartButton);
+
+        
+
 
 
         //add button panel to the frame ez
@@ -212,14 +259,23 @@ public class BlackJack {
         restartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
 
-                startGame();
+                startGame(true);
 
-                stayButton.setEnabled(true);
-                hitButton.setEnabled(true);
+                
                 
                 gamePanel.repaint();                            //this works basically how i want. might keep and use knowledge from this improvement to layer in a menu functionality 
                                                                 //but for now (6/18/24 5:04 pm) im gonna try only letting it (restart button) be enabled after "the game"
                 
+            }
+        });
+
+        //next hand button action listener
+        nextHandButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+                startGame(false);  // false = keep current deck
+                
+                gamePanel.repaint();
             }
         });
 
@@ -231,6 +287,10 @@ public class BlackJack {
                 playerHand.add(card);
                 if (reducePlayerAce() > 21) {            //A + 2 + J --> 1 + 2 + J
                     hitButton.setEnabled(false);
+                }
+                if(checkForBust()) {
+                    gamePanel.repaint();
+                    return;
                 }
 
                 gamePanel.repaint();
@@ -263,15 +323,30 @@ public class BlackJack {
 
     }
 
-    public void startGame(){
+    public void startGame(boolean resetDeck){
         //start game now returns the enabled status of the restartButton to its default 
         restartButton.setEnabled(false);
+        nextHandButton.setEnabled(false);
+        hitButton.setEnabled(true);
+        stayButton.setEnabled(true);
 
 
 
-        //deck methods
-        deck = buildDeck();
-        shuffleDeck();
+        
+        //deck methods - only create new deck if needed
+        if (resetDeck) {  // Restart button = always new deck
+            deck = buildDeck();
+            shuffleDeck();
+            System.out.println("New deck created. Cards remaining: " + deck.size());
+        } 
+        else if (deck == null || DeckState.getStatus(deck.size()) == DeckState.VERY_LOW) {  // Next hand = only new deck if needed
+            deck = buildDeck();
+            shuffleDeck();
+            System.out.println("New deck created due to low cards. Cards remaining: " + deck.size());
+        }
+        else {
+            System.out.println("Continuing with existing deck. Cards remaining: " + deck.size() );
+        }
 
         //dealer 
         dealerHand = new ArrayList<Card>();
@@ -383,6 +458,27 @@ public class BlackJack {
 
 
     //BEGINNING OF IMPLEMENTATION OF ADVANCED FEATURES THAT ARE PLANNED. E.G. (adding a shoe mechanic, counters, trainers) //
+
+    private boolean checkForBust() {
+
+        //check player bust
+        if (reducePlayerAce() > 21) {
+
+            hitButton.setEnabled(false);
+            stayButton.setEnabled(false);
+            restartButton.setEnabled(true);
+
+            return true;
+        }
+
+        //check dealer bust
+        if (!stayButton.isEnabled() && reduceDealerAce() > 21) {
+            restartButton.setEnabled(true);
+
+            return true;
+        }
+        return false;
+    }
 
 
     //remove card from actual deck
